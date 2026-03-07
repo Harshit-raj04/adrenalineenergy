@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VoltRush Energy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="energy-bg" aria-hidden="true">
+      <span class="orb orb-1"></span>
+      <span class="orb orb-2"></span>
+      <span class="orb orb-3"></span>
+      <canvas id="spark-canvas"></canvas>
+    </div>
+
+    <header class="site-header">
+      <div class="brand">VOLT<span>RUSH</span></div>
+      <nav>
+        <a href="#flavors">Flavors</a>
+        <a href="#features">Performance</a>
+        <a href="#cta">Order</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="kicker">New Formula 2.0</p>
+          <h1>Fuel The <span>Night Shift</span></h1>
+          <p>
+            Zero sugar. Sharp focus. High-voltage citrus kick engineered for
+            builders, gamers, and creators.
+          </p>
+          <div class="hero-actions">
+            <button>Pre-Order Pack</button>
+            <a href="#features">See What’s Inside</a>
+          </div>
+        </div>
+
+        <div class="can-wrap" aria-label="Stylized energy drink can">
+          <div class="can">
+            <div class="can-shine"></div>
+            <div class="can-logo">VOLT</div>
+            <div class="can-stripe"></div>
+            <div class="can-flavor">CITRUS SURGE</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="features" id="features">
+        <article>
+          <h2>150mg Caffeine</h2>
+          <p>Sustained release blend to keep focus locked for longer sessions.</p>
+        </article>
+        <article>
+          <h2>B-Vitamin Stack</h2>
+          <p>Energy metabolism support to cut through afternoon crashes.</p>
+        </article>
+        <article>
+          <h2>Electrolyte Boost</h2>
+          <p>Hydration support tuned for late-night sprints and workouts.</p>
+        </article>
+      </section>
+    </main>
+
+    <footer id="cta">
+      <p>Drop incoming. Subscribe for launch pricing.</p>
+      <form>
+        <input type="email" placeholder="Enter your email" aria-label="Email" />
+        <button type="submit">Notify Me</button>
+      </form>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
