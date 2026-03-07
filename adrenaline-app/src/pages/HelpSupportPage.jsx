@@ -14,14 +14,14 @@ export default function HelpSupportPage() {
 
   return (
     <div className="flex-1 max-w-4xl mx-auto w-full p-6 pt-24 pb-32 relative z-10 min-h-[calc(100vh-80px)]">
-      <div className="mb-12 border-b border-white/10 pb-6 flex justify-between items-end">
+      <div className="mb-8 md:mb-12 border-b border-white/10 pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
         <div>
-          <h2 className="text-4xl font-black italic uppercase">HQ <span className="text-cyan-500">Comms</span></h2>
-          <p className="text-gray-400 mt-2">Intelligence briefing and direct support channels.</p>
+          <h2 className="text-3xl md:text-4xl font-black italic uppercase">HQ <span className="text-cyan-500">Comms</span></h2>
+          <p className="text-gray-400 text-sm md:text-base mt-2">Intelligence briefing and direct support channels.</p>
         </div>
         <a 
           href="mailto:support@adrenaline.test"
-          className="flex items-center gap-2 bg-white/10 hover:bg-white text-white hover:text-black transition px-6 py-3 font-bold tracking-widest text-sm"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white/10 hover:bg-white text-white hover:text-black transition px-6 py-3 font-bold tracking-widest text-sm"
         >
           <Mail size={16} />
           CONTACT SUPPORT

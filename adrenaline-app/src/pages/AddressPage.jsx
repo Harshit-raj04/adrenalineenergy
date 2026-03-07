@@ -19,14 +19,14 @@ export default function AddressPage() {
 
   return (
     <div className="flex-1 max-w-5xl mx-auto w-full p-6 pt-24 pb-32 relative z-10 min-h-[calc(100vh-80px)]">
-      <div className="flex justify-between items-end mb-12 border-b border-white/10 pb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 md:mb-12 border-b border-white/10 pb-6 gap-6">
         <div>
-          <h2 className="text-4xl font-black italic uppercase">Shipping <span className="text-cyan-500">Telemetry</span></h2>
-          <p className="text-gray-400 mt-2">Manage your fuel supply drop coordinates.</p>
+          <h2 className="text-3xl md:text-4xl font-black italic uppercase">Shipping <span className="text-cyan-500">Telemetry</span></h2>
+          <p className="text-gray-400 text-sm md:text-base mt-2">Manage your fuel supply drop coordinates.</p>
         </div>
         <button 
           onClick={() => setIsAdding(!isAdding)}
-          className="bg-white/10 hover:bg-white text-white hover:text-black px-6 py-2 font-bold tracking-widest text-sm transition"
+          className="w-full sm:w-auto bg-white/10 hover:bg-white text-white hover:text-black px-6 py-2 font-bold tracking-widest text-sm transition"
         >
           {isAdding ? 'CANCEL' : '+ NEW DROP ZONE'}
         </button>

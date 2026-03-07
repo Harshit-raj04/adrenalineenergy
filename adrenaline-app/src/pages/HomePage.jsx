@@ -25,7 +25,7 @@ function ProductCard({ product, i, isAntigravityOn, addToCart }) {
         animate: { opacity: 1, y: 0, transition: { duration: 0.8, delay: i * 0.15, type: "spring", bounce: 0.25 } },
         hover: { y: -5, transition: { duration: 0.3 } }
       }}
-      className={`relative bg-black border overflow-hidden flex flex-col items-center p-8 transition-all duration-500 cursor-default group ${
+      className={`relative bg-black border overflow-hidden flex flex-col items-center p-6 md:p-8 transition-all duration-500 cursor-default group ${
         isAntigravityOn ? 'border-red-900/30 hover:border-red-600/60 shadow-[0_0_0_rgba(220,38,38,0)] hover:shadow-[0_0_30px_rgba(220,38,38,0.15)]' : 'border-white/5 hover:border-cyan-400/30 shadow-none'
       }`}
     >
@@ -80,21 +80,21 @@ export default function HomePage({ isAntigravityOn, addToCart }) {
             <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={0.5} />
           </Canvas>
         </div>
-        <main className="relative z-20 h-full flex flex-col px-6 md:px-16 pointer-events-none pt-40">
+        <main className="relative z-20 h-full flex flex-col px-6 md:px-16 pointer-events-none pt-24 md:pt-40">
           <motion.div initial={{ x: -100, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.8 }} className="max-w-2xl">
             <div className="flex items-center gap-2 text-red-500 mb-4">
-              <Zap size={20} fill="currentColor" />
-              <span className="font-bold tracking-[0.3em] text-xs">0-100% FOCUS IN 2.9s</span>
+              <Zap size={16} md:size={20} fill="currentColor" />
+              <span className="font-bold tracking-[0.2em] md:tracking-[0.3em] text-[10px] md:text-xs italic uppercase">0-100% FOCUS IN 2.9s</span>
             </div>
-            <h2 className="text-8xl font-black leading-none italic uppercase mb-6">
-              Defy <br /> <span className="text-transparent stroke-white" style={{ WebkitTextStroke: '2px white' }}>Gravity.</span>
+            <h2 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black leading-none italic uppercase mb-6">
+              Defy <br /> <span className="text-transparent" style={{ WebkitTextStroke: '1px white' }}>Gravity.</span>
             </h2>
-            <p className="text-gray-400 text-lg mb-8 max-w-md pointer-events-auto">
+            <p className="text-gray-400 text-sm md:text-lg mb-8 max-w-md pointer-events-auto leading-relaxed">
               Engineered for the elite. Adrenaline mimics the aerodynamics of F1 to deliver energy that hits faster than a hairpin turn.
             </p>
-            <div className="flex gap-12 pointer-events-auto w-full">
-              <div className="flex flex-col"><span className="text-3xl font-black italic">180mg</span><span className="text-[10px] text-gray-500 tracking-widest uppercase">Caffeine / RPM</span></div>
-              <div className="flex flex-col"><span className="text-3xl font-black italic">0.0s</span><span className="text-[10px] text-gray-500 tracking-widest uppercase">Sugar / Drag</span></div>
+            <div className="flex flex-col sm:flex-row gap-6 sm:gap-12 pointer-events-auto w-full">
+              <div className="flex flex-col"><span className="text-2xl md:text-3xl font-black italic">180mg</span><span className="text-[9px] text-gray-500 tracking-widest uppercase">Caffeine / RPM</span></div>
+              <div className="flex flex-col"><span className="text-2xl md:text-3xl font-black italic">0.0s</span><span className="text-[9px] text-gray-500 tracking-widest uppercase">Sugar / Drag</span></div>
             </div>
           </motion.div>
         </main>
@@ -105,9 +105,9 @@ export default function HomePage({ isAntigravityOn, addToCart }) {
         <div className={`absolute inset-0 transition-opacity duration-1000 pointer-events-none z-0 ${isAntigravityOn ? 'opacity-100' : 'opacity-0'}`} style={{ background: 'radial-gradient(circle at center, rgba(153,0,0,0.15) 0%, rgba(0,0,0,1) 70%)' }} />
         <div className={`absolute inset-0 bg-neutral-950 transition-opacity duration-1000 pointer-events-none z-0 ${isAntigravityOn ? 'opacity-0' : 'opacity-100'}`} />
         <div className="max-w-7xl mx-auto relative z-20">
-          <div className="mb-16">
-            <h2 className="text-6xl font-black italic uppercase">Arsenal <span className={isAntigravityOn ? "text-red-500 transition-colors duration-1000" : "text-cyan-400 transition-colors duration-1000"}>Selection.</span></h2>
-            <p className="text-gray-400 text-lg mt-4 max-w-xl transition-colors duration-1000">
+          <div className="mb-12 md:mb-16">
+            <h2 className="text-4xl md:text-6xl font-black italic uppercase leading-tight">Arsenal <br className="sm:hidden" /> <span className={isAntigravityOn ? "text-red-500 transition-colors duration-1000" : "text-cyan-400 transition-colors duration-1000"}>Selection.</span></h2>
+            <p className="text-gray-400 text-sm md:text-lg mt-4 max-w-xl transition-colors duration-1000 leading-relaxed">
               {isAntigravityOn 
                 ? "Choose your tuning. Eight distinct profiles designed to optimize your neural and physical RPMs. Includes extreme-yield caffeinated beverages." 
                 : "Smooth endurance. Eight essential hydration protocols built to keep the engine running across long sectors. Includes non-caffeinated endurance beverages."}

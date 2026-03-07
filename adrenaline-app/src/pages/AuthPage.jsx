@@ -12,10 +12,10 @@ export default function AuthPage() {
         className="w-full max-w-md bg-neutral-900 border border-white/10 p-8 shadow-2xl relative overflow-hidden"
       >
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 to-red-900" />
-        <h2 className="text-3xl font-black italic uppercase mb-2">
+        <h2 className="text-2xl md:text-3xl font-black italic uppercase mb-2">
           {isSignIn ? 'Welcome Back.' : 'Join the Elite.'}
         </h2>
-        <p className="text-gray-400 text-sm mb-8">
+        <p className="text-gray-400 text-xs md:text-sm mb-8 leading-relaxed">
           {isSignIn ? 'Enter your telemetry data to continue.' : 'Register new driver profile.'}
         </p>
         

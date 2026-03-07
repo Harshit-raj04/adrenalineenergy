@@ -18,9 +18,9 @@ export default function OrderHistoryPage({ orders, setOrders }) {
 
   return (
     <div className="flex-1 max-w-5xl mx-auto w-full p-6 pt-24 pb-32 relative z-10 min-h-[calc(100vh-80px)]">
-      <div className="mb-12 border-b border-white/10 pb-6">
-        <h2 className="text-4xl font-black italic uppercase">Shipment <span className="text-red-500">Logs</span></h2>
-        <p className="text-gray-400 mt-2">Track your past fuel acquisitions and manage active deployments.</p>
+      <div className="mb-8 md:mb-12 border-b border-white/10 pb-6">
+        <h2 className="text-3xl md:text-4xl font-black italic uppercase">Shipment <span className="text-red-500">Logs</span></h2>
+        <p className="text-gray-400 text-sm md:text-base mt-2">Track your past fuel acquisitions and manage active deployments.</p>
       </div>
 
       {orders.length === 0 ? (
