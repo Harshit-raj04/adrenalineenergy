@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { PerspectiveCamera, Stars } from '@react-three/drei';
 import { motion } from 'framer-motion';
-import { Zap } from 'lucide-react';
+import { Zap, Info } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 const FLAVORS = [
   { id: 'cran', name: 'CRANBERRY', desc: 'Fierce sweet-tart energy rush', img: '/can-cranberry.png', imgSplash: '/can-cranberry-splash.png', color: 'from-red-600 to-red-900', price: '$4.99' },
@@ -36,13 +37,16 @@ function ProductCard({ product, i, isAntigravityOn, addToCart }) {
         <motion.img src={product.imgSplash} alt={product.name + " Splash"} variants={{ initial: { opacity: 0, scale: 0.9, y: 20 }, animate: { opacity: 0, scale: 0.9, y: 20 }, hover: { opacity: 1, scale: 1.15, y: -10, rotate: [-1, 1, 0] } }} transition={{ type: "spring", bounce: 0.3, duration: 1.2 }} className="absolute inset-0 m-auto w-[130%] h-[130%] object-contain filter drop-shadow-[0_0_25px_rgba(255,255,255,0.3)] z-10 pointer-events-none" />
       </div>
       
-      <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20">
-        <div className="text-[9px] text-gray-300 flex flex-col gap-1 text-left bg-black/80 backdrop-blur-md p-3 rounded border border-white/10 uppercase font-mono tracking-widest whitespace-nowrap">
-          <span className="font-bold text-white border-b border-white/20 pb-1 mb-1">300ml PER CAN</span>
+      <div className="absolute top-4 left-4 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20">
+        <div className="text-[9px] text-gray-300 flex flex-col gap-1 text-left bg-black/80 backdrop-blur-md p-2 md:p-3 rounded border border-white/10 uppercase font-mono tracking-widest whitespace-nowrap">
+          <span className="font-bold text-white border-b border-white/20 pb-1 mb-1 flex items-center gap-1">
+            <Info size={10} className="text-red-500" />
+            300ml PER CAN
+          </span>
           {isAntigravityOn ? (
-            <><span className="text-red-400">Caffeine: 180mg</span><span>Vitamin B3</span><span>Zero Sugar</span><span>Taurine (Safe Limit)</span></>
+            <><span className="text-red-400 font-bold">Caffeine: 180mg</span><span>Vitamin B3</span><span>Zero Sugar</span><span>Taurine</span></>
           ) : (
-            <><span className="text-cyan-400">Essential Minerals</span><span>Electrolytes</span><span>Glucose</span><span className="text-gray-500">Zero Caffeine / Taurine</span></>
+            <><span className="text-cyan-400 font-bold font-bold">Electrolytes</span><span>Minerals</span><span>Glucose</span><span className="text-gray-500">Zero Caffeine</span></>
           )}
         </div>
       </div>
@@ -68,6 +72,15 @@ function ProductCard({ product, i, isAntigravityOn, addToCart }) {
 }
 
 export default function HomePage({ isAntigravityOn, addToCart }) {
+  const { hash } = useLocation();
+
+  React.useEffect(() => {
+    if (hash === '#products') {
+      const el = document.getElementById('products');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [hash]);
+
   return (
     <>
       {/* Hero Section */}

@@ -196,7 +196,7 @@ export default function App() {
             <h1 className="text-xl sm:text-2xl md:text-3xl font-black italic tracking-tighter">ADRENALINE</h1>
           </Link>
           <div className="hidden md:flex gap-8 font-bold uppercase text-sm tracking-widest items-center relative z-50">
-            <Link to="/" className="hover:text-red-500 transition">Pit Lane (Products)</Link>
+            <a href="/#products" className="hover:text-red-500 transition">Pit Lane (Products)</a>
             <a href="#" className="hover:text-red-500 transition">Telemetry</a>
             <button 
               onClick={() => setIsBuyMenuOpen(true)}
@@ -271,7 +271,7 @@ export default function App() {
               className="md:hidden bg-black border-t border-white/10 overflow-hidden"
             >
               <div className="flex flex-col p-6 gap-6 font-bold uppercase tracking-[0.2em] text-sm">
-                <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-red-500">Pit Lane</Link>
+                <a href="/#products" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-red-500">Pit Lane</a>
                 <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-red-500">Authentication</Link>
                 <Link to="/address" onClick={() => setIsMobileMenuOpen(false)}>Addresses</Link>
                 <Link to="/orders" onClick={() => setIsMobileMenuOpen(false)}>Orders</Link>
