@@ -191,9 +191,9 @@ export default function App() {
 
       {/* No need to overlay hero background here since we moved it into the Hero Container */}
       <nav className="fixed top-0 w-full z-50 border-b border-white/10 bg-black/50 backdrop-blur-md">
-        <div className="w-full mx-auto px-6 md:px-16 py-6 flex justify-between items-center relative z-50">
+        <div className="w-full mx-auto px-4 sm:px-6 md:px-16 py-4 md:py-6 flex justify-between items-center relative z-50">
           <Link to="/" className="hover:opacity-80 transition">
-            <h1 className="text-3xl font-black italic tracking-tighter">ADRENALINE</h1>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-black italic tracking-tighter">ADRENALINE</h1>
           </Link>
           <div className="hidden md:flex gap-8 font-bold uppercase text-sm tracking-widest items-center relative z-50">
             <Link to="/" className="hover:text-red-500 transition">Pit Lane (Products)</Link>

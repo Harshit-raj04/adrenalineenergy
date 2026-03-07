@@ -73,7 +73,7 @@ export default function AgentWidget() {
   };
 
   return (
-    <div className="fixed bottom-24 right-6 z-50 flex flex-col items-end">
+    <div className="fixed bottom-24 right-4 sm:right-6 z-50 flex flex-col items-end max-w-[calc(100vw-2rem)]">
       <AnimatePresence>
         {isOpen && (
           <motion.div 
@@ -81,7 +81,7 @@ export default function AgentWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            className="mb-4 w-80 sm:w-96 bg-neutral-900 border border-white/10 shadow-2xl overflow-hidden flex flex-col h-[500px]"
+            className="mb-4 w-full sm:w-80 md:w-96 bg-neutral-900 border border-white/10 shadow-2xl overflow-hidden flex flex-col h-[400px] sm:h-[500px]"
           >
             {/* Header */}
             <div className="bg-black border-b border-red-900/40 p-4 flex justify-between items-center relative">

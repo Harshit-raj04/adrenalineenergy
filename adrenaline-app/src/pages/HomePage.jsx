@@ -71,7 +71,7 @@ export default function HomePage({ isAntigravityOn, addToCart }) {
   return (
     <>
       {/* Hero Section */}
-      <div className="relative h-screen w-full">
+      <div className="relative h-[100dvh] w-full overflow-hidden">
         <div className="absolute inset-0 z-10">
           <Canvas>
             <PerspectiveCamera makeDefault position={[0, 0, 5]} />
@@ -83,10 +83,10 @@ export default function HomePage({ isAntigravityOn, addToCart }) {
         <main className="relative z-20 h-full flex flex-col px-6 md:px-16 pointer-events-none pt-24 md:pt-40">
           <motion.div initial={{ x: -100, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.8 }} className="max-w-2xl">
             <div className="flex items-center gap-2 text-red-500 mb-4">
-              <Zap size={16} md:size={20} fill="currentColor" />
-              <span className="font-bold tracking-[0.2em] md:tracking-[0.3em] text-[10px] md:text-xs italic uppercase">0-100% FOCUS IN 2.9s</span>
+              <Zap size={14} md:size={20} fill="currentColor" />
+              <span className="font-bold tracking-[0.1em] md:tracking-[0.3em] text-[9px] md:text-xs italic uppercase">0-100% FOCUS IN 2.9s</span>
             </div>
-            <h2 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black leading-none italic uppercase mb-6">
+            <h2 className="text-4xl sm:text-7xl md:text-8xl lg:text-9xl font-black leading-none italic uppercase mb-6">
               Defy <br /> <span className="text-transparent" style={{ WebkitTextStroke: '1px white' }}>Gravity.</span>
             </h2>
             <p className="text-gray-400 text-sm md:text-lg mb-8 max-w-md pointer-events-auto leading-relaxed">
