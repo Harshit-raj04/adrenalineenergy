@@ -1,0 +1,14 @@
+{
+  "name": "adrenaline-fullstack-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && cd adrenaline-app && npm install && cd ../backend && npm install",
+    "dev": "concurrently \"npm run dev --prefix adrenaline-app\" \"npm run start --prefix backend\"",
+    "build": "cd adrenaline-app && npm install && npm run build",
+    "start": "cd backend && npm install && node server.js"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
