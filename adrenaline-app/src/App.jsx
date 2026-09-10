@@ -12,6 +12,7 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsConditionPage from './pages/TermsConditionPage';
 import ScrollToTop from './components/ScrollToTop';
 import AgentWidget from './components/AgentWidget';
+import AdminPage from './pages/AdminPage';
 
 const loadRazorpayScript = () => {
   return new Promise((resolve) => {
@@ -276,6 +277,7 @@ export default function App() {
                 <Link to="/address" onClick={() => setIsMobileMenuOpen(false)}>Addresses</Link>
                 <Link to="/orders" onClick={() => setIsMobileMenuOpen(false)}>Orders</Link>
                 <Link to="/support" onClick={() => setIsMobileMenuOpen(false)}>Support</Link>
+                <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="text-yellow-500">Admin Panel</Link>
               </div>
             </motion.div>
           )}
@@ -291,6 +293,7 @@ export default function App() {
           <Route path="/support" element={<HelpSupportPage />} />
           <Route path="/privacy" element={<PrivacyPolicyPage />} />
           <Route path="/terms" element={<TermsConditionPage />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Routes>
 
         {/* Global Footer */}

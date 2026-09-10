@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const Order = require('../models/Order');
+const Product = require('../models/Product');
 const authMiddleware = require('../middleware/authMiddleware');
 
 // Protect all order routes
@@ -46,6 +47,22 @@ router.post('/verify-payment', async (req, res) => {
             },
             { new: true }
         );
+
+        if (!order) return res.status(404).json({ error: 'Order not found.' });
+
+        // ── Deduct inventory stock ──────────────────────────────────
+        // For each item in the verified order, decrement the product stock
+        const stockOps = (order.items || []).map(item => ({
+            updateOne: {
+                filter: { slug: item.id, stock: { $gte: item.cartQuantity } },
+                update: { $inc: { stock: -item.cartQuantity } },
+            }
+        }));
+
+        if (stockOps.length > 0) {
+            await Product.bulkWrite(stockOps);
+        }
+        // ────────────────────────────────────────────────────────────
 
         res.json({ success: true, order });
     } catch (error) {

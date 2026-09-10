@@ -24,6 +24,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/addresses', require('./routes/addressRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
+app.use('/api/products', require('./routes/productRoutes'));
 
 app.listen(PORT, () => {
     console.log(`Adrenaline API listening on port ${PORT}`);
