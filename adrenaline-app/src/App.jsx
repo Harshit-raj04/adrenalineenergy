@@ -199,6 +199,7 @@ export default function App() {
           <div className="hidden md:flex gap-8 font-bold uppercase text-sm tracking-widest items-center relative z-50">
             <a href="/#products" className="hover:text-red-500 transition">Pit Lane (Products)</a>
             <a href="#" className="hover:text-red-500 transition">Telemetry</a>
+            <Link to="/admin" className="text-yellow-500 hover:text-yellow-400 transition">Admin Panel</Link>
             <button 
               onClick={() => setIsBuyMenuOpen(true)}
               className="flex items-center gap-2 bg-neutral-900 border border-white/10 px-6 py-2 hover:bg-red-600 transition hover:border-red-600 rounded-full"
@@ -243,6 +244,9 @@ export default function App() {
                     </Link>
                     <Link to="/support" onClick={() => setIsProfileMenuOpen(false)} className="flex items-center px-6 py-3 border-t border-white/5 hover:bg-white/5 transition text-gray-300 hover:text-white text-xs tracking-wider">
                       Help & Support
+                    </Link>
+                    <Link to="/admin" onClick={() => setIsProfileMenuOpen(false)} className="flex items-center px-6 py-3 border-t border-white/5 hover:bg-white/5 transition text-yellow-500 hover:text-yellow-400 text-xs tracking-wider font-bold">
+                      Admin Panel
                     </Link>
                   </motion.div>
                 )}

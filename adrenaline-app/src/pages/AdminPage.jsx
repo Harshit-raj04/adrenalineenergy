@@ -45,6 +45,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (authenticated) fetchProducts();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authenticated]);
 
   const handlePinSubmit = (e) => {
@@ -190,13 +191,13 @@ export default function AdminPage() {
       {/* Stats Row */}
       <div className="grid grid-cols-3 gap-4 mb-8">
         {[
-          { label: 'Total Units', value: totalStock, icon: TrendingUp, color: 'text-cyan-400' },
-          { label: 'Low Stock', value: lowStock, icon: AlertTriangle, color: 'text-yellow-400' },
-          { label: 'Out of Stock', value: outOfStock, icon: XCircle, color: 'text-red-400' },
-        ].map(({ label, value, icon: Icon, color }) => (
+          { label: 'Total Units', value: totalStock, Comp: TrendingUp, color: 'text-cyan-400' },
+          { label: 'Low Stock', value: lowStock, Comp: AlertTriangle, color: 'text-yellow-400' },
+          { label: 'Out of Stock', value: outOfStock, Comp: XCircle, color: 'text-red-400' },
+        ].map(({ label, value, Comp, color }) => (
           <div key={label} className="bg-neutral-900 border border-white/10 p-4 flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <Icon size={14} className={color} />
+              <Comp size={14} className={color} />
               <span className="text-[10px] text-gray-500 uppercase tracking-widest">{label}</span>
             </div>
             <span className={`text-2xl md:text-3xl font-black font-mono ${color}`}>{value}</span>
