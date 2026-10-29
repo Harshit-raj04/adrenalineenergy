@@ -1,7 +1,7 @@
 const TOKEN_KEY = 'adrenaline_token';
 const USER_KEY = 'adrenaline_user';
 
-export const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+export const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 export function getToken() {
   return localStorage.getItem(TOKEN_KEY);

@@ -5,7 +5,7 @@ const cors = require('cors');
 const cacheService = require('./services/cacheService');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Security & Parsing Middleware
 app.use(cors());

@@ -81,7 +81,7 @@ export default function AgentWidget({ addToCart }) {
         ...prev, 
         { 
           id: Date.now() + 1, 
-          text: "Telemetry relay timeout. Ensure your Adrenaline backend server is active on port 5000.", 
+          text: "Telemetry relay timeout. Ensure your Adrenaline backend server is active on port 5001.", 
           sender: 'ai',
           isError: true
         }

@@ -149,6 +149,9 @@ const SEED_PRODUCTS = [
 router.get('/', async (req, res) => {
   try {
     const result = await cacheService.getOrSet('products:all', async () => {
+      if (mongoose.connection.readyState !== 1) {
+        return SEED_PRODUCTS;
+      }
       let prods = await Product.find().sort({ slug: 1 });
       if (!prods || prods.length === 0) {
         // Auto-seed if empty database
@@ -158,9 +161,9 @@ router.get('/', async (req, res) => {
       return prods;
     }, 180); // 3 minutes TTL
 
-    res.json(result.data);
+    res.json(result.data || SEED_PRODUCTS);
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Failed to fetch products', error: err.message });
+    res.json(SEED_PRODUCTS);
   }
 });
 
@@ -180,6 +183,50 @@ router.get('/search', async (req, res) => {
       page = 1,
       limit = 12,
     } = req.query;
+
+    if (mongoose.connection.readyState !== 1) {
+      // In-memory filter fallback when Mongo is disconnected
+      let filtered = [...SEED_PRODUCTS];
+      if (q && q.trim()) {
+        const cleanQ = q.trim().toLowerCase();
+        filtered = filtered.filter(p =>
+          p.name.toLowerCase().includes(cleanQ) ||
+          p.desc.toLowerCase().includes(cleanQ) ||
+          (p.tags && p.tags.some(t => t.toLowerCase().includes(cleanQ)))
+        );
+      }
+      if (category && category !== 'ALL') {
+        filtered = filtered.filter(p => p.category === category.toUpperCase());
+      }
+      if (minPrice !== undefined) filtered = filtered.filter(p => p.price >= Number(minPrice));
+      if (maxPrice !== undefined) filtered = filtered.filter(p => p.price <= Number(maxPrice));
+      if (minCaffeine !== undefined) filtered = filtered.filter(p => p.caffeine >= Number(minCaffeine));
+      if (maxCaffeine !== undefined) filtered = filtered.filter(p => p.caffeine <= Number(maxCaffeine));
+      if (maxSugar !== undefined) filtered = filtered.filter(p => p.sugar <= Number(maxSugar));
+      if (inStockOnly === 'true' || inStockOnly === true) filtered = filtered.filter(p => p.stock > 0);
+
+      if (sort === 'price_asc') filtered.sort((a, b) => a.price - b.price);
+      else if (sort === 'price_desc') filtered.sort((a, b) => b.price - a.price);
+      else if (sort === 'rating') filtered.sort((a, b) => b.rating - a.rating);
+      else if (sort === 'caffeine_desc') filtered.sort((a, b) => b.caffeine - a.caffeine);
+      else if (sort === 'name') filtered.sort((a, b) => a.name.localeCompare(b.name));
+
+      const pageNum = Math.max(1, parseInt(page, 10) || 1);
+      const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10) || 12));
+      const skip = (pageNum - 1) * limitNum;
+      const paginated = filtered.slice(skip, skip + limitNum);
+
+      return res.json({
+        success: true,
+        data: paginated,
+        pagination: {
+          page: pageNum,
+          limit: limitNum,
+          totalItems: filtered.length,
+          totalPages: Math.ceil(filtered.length / limitNum),
+        },
+      });
+    }
 
     const query = {};
 
@@ -263,6 +310,15 @@ router.get('/:slug', async (req, res) => {
     const cached = await cacheService.get(cacheKey);
     if (cached) {
       return res.json({ success: true, data: cached });
+    }
+
+    if (mongoose.connection.readyState !== 1) {
+      const product = SEED_PRODUCTS.find(p => p.slug === slug);
+      if (!product) return res.status(404).json({ success: false, message: 'Product profile not found' });
+      const related = SEED_PRODUCTS.filter(p => p.slug !== slug && p.category === product.category).slice(0, 3);
+      const payload = { product, related };
+      await cacheService.set(cacheKey, payload, 300);
+      return res.json({ success: true, data: payload });
     }
 
     const product = await Product.findOne({ slug });
