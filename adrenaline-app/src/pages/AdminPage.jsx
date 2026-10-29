@@ -139,8 +139,12 @@ export default function AdminPage() {
   };
 
   const handleUpdateStock = async (slug, delta = 0) => {
-    const currentVal = parseInt(editStock[slug], 10) || 0;
-    const newStock = Math.max(0, currentVal + delta);
+    const currentProduct = products.find(p => p.slug === slug);
+    const baseVal = delta === 0
+      ? (editStock[slug] !== undefined ? editStock[slug] : currentProduct?.stock || 0)
+      : (currentProduct?.stock || 0);
+
+    const newStock = Math.max(0, parseInt(baseVal, 10) + delta);
     try {
       const res = await fetch(`${API_BASE}/api/products/${slug}/stock`, {
         method: 'PUT',
@@ -354,10 +358,9 @@ export default function AdminPage() {
                   <th className="py-3 px-4">PRODUCT</th>
                   <th className="py-3 px-4">CATEGORY</th>
                   <th className="py-3 px-4">PRICE</th>
-                  <th className="py-3 px-4">CAFFEINE</th>
                   <th className="py-3 px-4">STATUS</th>
-                  <th className="py-3 px-4 text-center">CURRENT UNITS</th>
-                  <th className="py-3 px-4 text-right">QUICK RESTOCK</th>
+                  <th className="py-3 px-4 text-center">MANAGE UNITS</th>
+                  <th className="py-3 px-4 text-right">QUICK ADJUST (- / +)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -372,22 +375,75 @@ export default function AdminPage() {
                     </td>
                     <td className="py-3 px-4 text-gray-400 uppercase text-[10px]">{p.category || 'HIGH_OCTANE'}</td>
                     <td className="py-3 px-4 text-white font-bold">${Number(p.price).toFixed(2)}</td>
-                    <td className="py-3 px-4 text-red-400">{p.caffeine || 180}mg</td>
                     <td className="py-3 px-4"><StockBadge stock={p.stock} /></td>
                     <td className="py-3 px-4 text-center">
-                      <span className="font-black text-sm text-white font-mono">{p.stock}</span>
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button
+                          onClick={() => handleUpdateStock(p.slug, -1)}
+                          disabled={p.stock <= 0}
+                          className="w-6 h-6 rounded bg-red-950/60 hover:bg-red-600 border border-red-500/30 text-red-300 hover:text-white flex items-center justify-center font-bold text-xs transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                          title="Decrease by 1"
+                        >
+                          -
+                        </button>
+                        <input
+                          type="number"
+                          min="0"
+                          value={editStock[p.slug] !== undefined ? editStock[p.slug] : p.stock}
+                          onChange={(e) => setEditStock({ ...editStock, [p.slug]: Math.max(0, parseInt(e.target.value, 10) || 0) })}
+                          onKeyDown={(e) => { if (e.key === 'Enter') handleUpdateStock(p.slug, 0); }}
+                          className="w-16 text-center bg-black/80 border border-white/20 focus:border-red-500 text-white font-mono text-xs py-1 px-1 rounded outline-none"
+                        />
+                        <button
+                          onClick={() => handleUpdateStock(p.slug, 1)}
+                          className="w-6 h-6 rounded bg-green-950/60 hover:bg-green-600 border border-green-500/30 text-green-300 hover:text-white flex items-center justify-center font-bold text-xs transition cursor-pointer"
+                          title="Increase by 1"
+                        >
+                          +
+                        </button>
+                        <button
+                          onClick={() => handleUpdateStock(p.slug, 0)}
+                          className="ml-1 px-2 py-1 bg-white/10 hover:bg-white hover:text-black text-white text-[10px] font-bold rounded transition cursor-pointer"
+                          title="Save typed value"
+                        >
+                          SET
+                        </button>
+                      </div>
                     </td>
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
+                        {/* Decrement Stock */}
+                        <button
+                          onClick={() => handleUpdateStock(p.slug, -50)}
+                          disabled={p.stock <= 0}
+                          className="px-2 py-1 bg-red-950/80 border border-red-500/40 hover:bg-red-600 hover:text-white text-red-400 text-[10px] font-bold rounded transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                          title="Decrease stock by 50 units"
+                        >
+                          -50
+                        </button>
+                        <button
+                          onClick={() => handleUpdateStock(p.slug, -10)}
+                          disabled={p.stock <= 0}
+                          className="px-2 py-1 bg-red-950/80 border border-red-500/40 hover:bg-red-600 hover:text-white text-red-400 text-[10px] font-bold rounded transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                          title="Decrease stock by 10 units"
+                        >
+                          -10
+                        </button>
+
+                        <span className="text-gray-600 px-0.5">|</span>
+
+                        {/* Increment Stock */}
                         <button
                           onClick={() => handleUpdateStock(p.slug, 10)}
-                          className="px-2 py-1 bg-white/10 hover:bg-white hover:text-black text-white text-[10px] font-bold rounded transition cursor-pointer"
+                          className="px-2 py-1 bg-green-950/80 border border-green-500/40 hover:bg-green-600 hover:text-white text-green-400 text-[10px] font-bold rounded transition cursor-pointer"
+                          title="Increase stock by 10 units"
                         >
                           +10
                         </button>
                         <button
                           onClick={() => handleUpdateStock(p.slug, 50)}
-                          className="px-2 py-1 bg-white/10 hover:bg-white hover:text-black text-white text-[10px] font-bold rounded transition cursor-pointer"
+                          className="px-2 py-1 bg-green-950/80 border border-green-500/40 hover:bg-green-600 hover:text-white text-green-400 text-[10px] font-bold rounded transition cursor-pointer"
+                          title="Increase stock by 50 units"
                         >
                           +50
                         </button>
