@@ -21,7 +21,25 @@ if (process.env.NODE_ENV !== 'test') {
   mongoose.set('bufferCommands', false);
 }
 
-// ─── Health & Observability Endpoints ──────────────────────────────
+// ─── Root Status & Observability Endpoints ─────────────────────────
+app.get('/', (req, res) => {
+  res.json({
+    status: 'ONLINE',
+    service: 'Adrenaline Energy HQ Core API',
+    version: '2.0.0',
+    endpoints: {
+      health: '/health',
+      ready: '/ready',
+      products: '/api/products',
+      search: '/api/products/search?q=berry',
+      orders: '/api/orders',
+      aiChat: 'POST /api/ai/chat',
+      cacheStats: '/api/cache/stats',
+      frontend: 'http://localhost:5173'
+    }
+  });
+});
+
 app.get(['/health', '/api/health'], (req, res) => {
   res.json({
     status: 'OPTIMAL_READY',
