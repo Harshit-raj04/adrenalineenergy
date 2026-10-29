@@ -1,0 +1,56 @@
+name: Adrenaline Energy CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  audit-and-test:
+    name: Build & Verify Telemetry
+    runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Run Backend Test Suite
+        working-directory: ./backend
+        env:
+          NODE_ENV: test
+          JWT_SECRET: super_secret_test_key_ci_2026
+          ADMIN_PIN: 2004
+        run: npm test
+
+      - name: Install Frontend Dependencies
+        working-directory: ./adrenaline-app
+        run: npm ci
+
+      - name: Build Frontend Application
+        working-directory: ./adrenaline-app
+        run: npm run build
+
+      - name: Verify Docker Compose Config
+        run: docker compose config

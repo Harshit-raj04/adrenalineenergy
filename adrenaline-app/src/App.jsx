@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Gauge, Wind, ShoppingCart, X, User, Instagram, Twitter } from 'lucide-react';
+import { getUser, clearAuth } from './utils/auth';
 
 import HomePage from './pages/HomePage';
 import AuthPage from './pages/AuthPage';
@@ -29,46 +30,61 @@ const loadRazorpayScript = () => {
 };
 
 function BuyModal({ isOpen, onClose, cart, setCart, removeFromCart, updateCartQuantity, setOrders }) {
+  const [checkoutError, setCheckoutError] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
   const rawTotal = cart.reduce((sum, item) => sum + (parseFloat(item.price.replace('$', '')) * item.cartQuantity), 0);
   const totalStr = '$' + rawTotal.toFixed(2);
 
   const handlePayment = async () => {
-    const res = await loadRazorpayScript();
-    
-    if (!res) {
-      alert("Razorpay SDK failed to load. Are you online?");
-      return;
+    setCheckoutError('');
+    setIsProcessing(true);
+    const token = getToken();
+
+    // If user is authenticated, call server-side atomic reservation & verification
+    if (token) {
+      try {
+        const res = await fetch(`${API_BASE}/api/orders/checkout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeader()
+          },
+          body: JSON.stringify({
+            items: cart,
+            paymentId: `pay_auth_${Date.now()}`
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || 'Checkout denied by Adrenaline HQ.');
+        }
+
+        setOrders(prev => [data.order, ...prev]);
+        setCart([]);
+        onClose();
+        alert(`Fuel Requisition Confirmed!\nManifest: ${data.order.razorpayOrderId}\nStatus: PROCESSING. Stock deducted atomically.`);
+        return;
+      } catch (err) {
+        setCheckoutError(err.message);
+        setIsProcessing(false);
+        return;
+      }
     }
 
-    // Convert $ back to approximately INR for the dummy checkout display (using ~83 multiplier)
-    const amountInINR = Math.round(rawTotal * 83);
-
-    const options = {
-      key: 'rzp_test_DUMMY123456789', // Dummy Test Key
-      amount: amountInINR * 100, // Amount in paise
-      currency: 'INR',
-      name: 'ADRENALINE INC.',
-      description: 'Fuel Purchase Transaction',
-      image: '/can-cranberry.png', // Placeholder logo
-      handler: function (response) {
-        // Mock Success
-        alert(`Payment Successful! \nPayment ID: ${response.razorpay_payment_id}\nYour fuel is being prepped for launch.`);
-        setOrders(prev => [{ id: Date.now().toString().slice(-6), date: new Date().toISOString(), status: 'PROCESSING', total: totalStr, items: [...cart] }, ...prev]);
-        setCart([]); // Clear Cart
-        onClose(); // Close Modal
-      },
-      prefill: {
-        name: 'Guest Driver',
-        email: 'driver@adrenaline.test',
-        contact: '9999999999'
-      },
-      theme: {
-        color: '#dc2626' // Matches text-red-600
-      }
+    // Guest checkout fallback with persistent prompt
+    const mockOrder = { 
+      id: 'ord_guest_' + Date.now().toString().slice(-6), 
+      date: new Date().toISOString(), 
+      status: 'PROCESSING', 
+      total: totalStr, 
+      items: [...cart] 
     };
-
-    const paymentObject = new window.Razorpay(options);
-    paymentObject.open();
+    setOrders(prev => [mockOrder, ...prev]);
+    setCart([]);
+    onClose();
+    alert(`Guest Checkout Completed!\nSession Manifest: ${mockOrder.id}\nTip: Sign in with your driver profile to save orders permanently to Adrenaline HQ.`);
+    setIsProcessing(false);
   };
 
   return (
@@ -80,19 +96,25 @@ function BuyModal({ isOpen, onClose, cart, setCart, removeFromCart, updateCartQu
         >
           <motion.div 
             initial={{ scale: 0.9, y: 50 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 50 }}
-            className="bg-neutral-900 border border-white/10 p-4 md:p-8 w-full max-w-2xl relative max-h-[90vh] overflow-y-auto"
+            className="bg-neutral-900 border border-white/10 p-4 md:p-8 w-full max-w-2xl relative max-h-[90vh] overflow-y-auto rounded-xl"
           >
-            <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white transition z-10">
+            <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white transition z-10 p-1 hover:bg-white/10 rounded-full cursor-pointer">
               <X />
             </button>
-            <h2 className="text-2xl md:text-4xl font-black italic uppercase mb-8 text-white">YOUR <span className="text-red-500">CART</span></h2>
+            <h2 className="text-2xl md:text-4xl font-black italic uppercase mb-6 text-white">YOUR <span className="text-red-500">CART</span></h2>
             
+            {checkoutError && (
+              <div className="mb-6 p-4 bg-red-950/80 border border-red-500/50 text-red-300 text-xs font-mono rounded">
+                ⚠️ {checkoutError}
+              </div>
+            )}
+
             {cart.length === 0 ? (
               <div className="text-center py-12 text-gray-500 italic">No fuel in cart. Hit the pit lane.</div>
             ) : (
               <div className="flex flex-col gap-4">
                 {cart.map(f => (
-                  <div key={f.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-black/50 border border-white/5 hover:border-red-500/50 transition group gap-4">
+                  <div key={f.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-black/50 border border-white/5 hover:border-red-500/50 transition group gap-4 rounded-lg">
                     <div className="flex items-center gap-4">
                       <img src={f.img} alt={f.name} className="w-10 h-20 md:w-12 md:h-24 object-contain" />
                       <div>
@@ -102,14 +124,14 @@ function BuyModal({ isOpen, onClose, cart, setCart, removeFromCart, updateCartQu
                     </div>
                     <div className="flex items-center justify-between w-full sm:w-auto gap-4 md:gap-6">
                       <div className="flex items-center gap-3">
-                        <button onClick={() => updateCartQuantity(f.id, -1)} className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center">-</button>
+                        <button onClick={() => updateCartQuantity(f.id, -1)} className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center cursor-pointer">-</button>
                         <span className="font-mono text-lg md:text-xl w-6 text-center">{f.cartQuantity}</span>
-                        <button onClick={() => updateCartQuantity(f.id, 1)} className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center">+</button>
+                        <button onClick={() => updateCartQuantity(f.id, 1)} className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center cursor-pointer">+</button>
                       </div>
                       <span className="font-mono text-lg md:text-xl w-20 text-right mr-2 md:mr-4">${(parseFloat(f.price.replace('$','')) * f.cartQuantity).toFixed(2)}</span>
                       <button 
                         onClick={() => removeFromCart(f.id)}
-                        className="bg-white/10 text-white p-2 rounded-full hover:bg-red-500 transition"
+                        className="bg-white/10 text-white p-2 rounded-full hover:bg-red-500 transition cursor-pointer"
                       >
                         <X size={14} />
                       </button>
@@ -121,15 +143,21 @@ function BuyModal({ isOpen, onClose, cart, setCart, removeFromCart, updateCartQu
             
             <div className="mt-8 pt-8 border-t border-white/10 flex justify-between items-center">
               <div>
-                <span className="text-gray-500 block text-xs">Total</span>
-                <span className="text-3xl font-mono font-bold">{totalStr}</span>
+                <span className="text-gray-500 block text-xs font-mono uppercase tracking-widest">Calculated Subtotal</span>
+                <span className="text-3xl font-mono font-bold text-white">{totalStr}</span>
               </div>
               <button 
                 onClick={handlePayment}
-                className={`px-8 py-4 font-black text-xl skew-x-[-12deg] transition ${cart.length > 0 ? 'bg-red-600 text-white hover:bg-white hover:text-black' : 'bg-gray-800 text-gray-500 cursor-not-allowed'}`}
-                disabled={cart.length === 0}
+                disabled={cart.length === 0 || isProcessing}
+                className={`px-8 py-4 font-black text-lg md:text-xl skew-x-[-12deg] transition cursor-pointer ${
+                  cart.length > 0 && !isProcessing
+                    ? 'bg-red-600 text-white hover:bg-white hover:text-black shadow-[0_0_20px_rgba(220,38,38,0.5)]' 
+                    : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                }`}
               >
-                <span className="skew-x-[12deg] block">CHECKOUT</span>
+                <span className="skew-x-[12deg] block">
+                  {isProcessing ? 'RESERVING FUEL...' : 'CONFIRM ORDER'}
+                </span>
               </button>
             </div>
           </motion.div>
@@ -142,12 +170,19 @@ function BuyModal({ isOpen, onClose, cart, setCart, removeFromCart, updateCartQu
 // ProductCard component was moved to HomePage.jsx
 
 export default function App() {
+  const [currentUser, setCurrentUser] = useState(getUser());
   const [isBuyMenuOpen, setIsBuyMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [cart, setCart] = useState([]);
   const [orders, setOrders] = useState([]);
   const [isAntigravityOn, setIsAntigravityOn] = useState(true);
+
+  useEffect(() => {
+    const syncUser = () => setCurrentUser(getUser());
+    window.addEventListener('adrenaline_auth_change', syncUser);
+    return () => window.removeEventListener('adrenaline_auth_change', syncUser);
+  }, []);
 
   const cartTotalItems = cart.reduce((sum, item) => sum + item.cartQuantity, 0);
 
@@ -233,9 +268,17 @@ export default function App() {
                     transition={{ duration: 0.2 }}
                     className="absolute right-0 mt-4 w-56 bg-neutral-900 border border-white/10 rounded-xl overflow-hidden shadow-2xl z-50 flex flex-col"
                   >
-                    <Link to="/auth" onClick={() => setIsProfileMenuOpen(false)} className="flex items-center px-6 py-4 border-b border-white/5 hover:bg-white/5 transition text-red-500 font-black tracking-widest text-xs">
-                      Sign In / Sign Up
-                    </Link>
+                    {currentUser ? (
+                      <div className="px-6 py-4 border-b border-white/5 bg-white/[0.02]">
+                        <div className="text-[10px] font-mono text-cyan-400 tracking-widest uppercase">DRIVER ACTIVE</div>
+                        <div className="text-white font-bold text-xs truncate mt-0.5">{currentUser.name}</div>
+                        <div className="text-gray-500 text-[10px] truncate">{currentUser.email}</div>
+                      </div>
+                    ) : (
+                      <Link to="/auth" onClick={() => setIsProfileMenuOpen(false)} className="flex items-center px-6 py-4 border-b border-white/5 hover:bg-white/5 transition text-red-500 font-black tracking-widest text-xs">
+                        Sign In / Sign Up
+                      </Link>
+                    )}
                     <Link to="/address" onClick={() => setIsProfileMenuOpen(false)} className="flex items-center px-6 py-3 hover:bg-white/5 transition text-gray-300 hover:text-white text-xs tracking-wider">
                       Your Address
                     </Link>
@@ -248,6 +291,17 @@ export default function App() {
                     <Link to="/admin" onClick={() => setIsProfileMenuOpen(false)} className="flex items-center px-6 py-3 border-t border-white/5 hover:bg-white/5 transition text-yellow-500 hover:text-yellow-400 text-xs tracking-wider font-bold">
                       Admin Panel
                     </Link>
+                    {currentUser && (
+                      <button 
+                        onClick={() => {
+                          clearAuth();
+                          setIsProfileMenuOpen(false);
+                        }}
+                        className="flex items-center px-6 py-3 border-t border-white/5 hover:bg-red-500/10 transition text-red-400 hover:text-red-300 text-xs tracking-wider text-left font-bold cursor-pointer"
+                      >
+                        Sign Out
+                      </button>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -277,7 +331,23 @@ export default function App() {
             >
               <div className="flex flex-col p-6 gap-6 font-bold uppercase tracking-[0.2em] text-sm">
                 <a href="/#products" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-red-500">Pit Lane</a>
-                <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-red-500">Authentication</Link>
+                {currentUser ? (
+                  <div className="border-b border-white/10 pb-4">
+                    <div className="text-[10px] font-mono text-cyan-400">DRIVER ACTIVE</div>
+                    <div className="text-white font-bold text-sm">{currentUser.name}</div>
+                    <button 
+                      onClick={() => {
+                        clearAuth();
+                        setIsMobileMenuOpen(false);
+                      }} 
+                      className="text-red-400 hover:text-white text-xs uppercase tracking-wider mt-2 font-bold cursor-pointer block"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-red-500">Authentication</Link>
+                )}
                 <Link to="/address" onClick={() => setIsMobileMenuOpen(false)}>Addresses</Link>
                 <Link to="/orders" onClick={() => setIsMobileMenuOpen(false)}>Orders</Link>
                 <Link to="/support" onClick={() => setIsMobileMenuOpen(false)}>Support</Link>
@@ -350,7 +420,7 @@ export default function App() {
         updateCartQuantity={updateCartQuantity}
         setOrders={setOrders}
       />
-      <AgentWidget />
+      <AgentWidget addToCart={addToCart} />
     </div>
     </Router>
   );

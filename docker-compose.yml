@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  # ── Backend API Service ──
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: adrenaline-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - MONGODB_URI=mongodb://mongo:27017/adrenaline
+      - REDIS_URL=redis://redis:6379
+      - REDIS_ENABLED=true
+      - JWT_SECRET=super_secret_adrenaline_production_key_2026
+      - ADMIN_PIN=2004
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - adrenaline-network
+
+  # ── Frontend Web Application ──
+  frontend:
+    build:
+      context: ./adrenaline-app
+      dockerfile: Dockerfile
+    container_name: adrenaline-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - adrenaline-network
+
+  # ── MongoDB Document Database ──
+  mongo:
+    image: mongo:7.0
+    container_name: adrenaline-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - adrenaline-network
+
+  # ── Redis Cache Engine ──
+  redis:
+    image: redis:7-alpine
+    container_name: adrenaline-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - adrenaline-network
+
+volumes:
+  mongo-data:
+    driver: local
+  redis-data:
+    driver: local
+
+networks:
+  adrenaline-network:
+    driver: bridge
