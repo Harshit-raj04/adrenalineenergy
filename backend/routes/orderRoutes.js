@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const { SEED_PRODUCTS } = require('./productRoutes');
@@ -9,11 +10,24 @@ const cacheService = require('../services/cacheService');
 
 const IN_MEMORY_ORDERS = [];
 
-// Protect all order routes with JWT
-router.use(authMiddleware);
+// Optional auth for checkout (supports both logged-in drivers and guests)
+const optionalAuth = (req, res, next) => {
+  const authHeader = req.header('Authorization');
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    try {
+      req.user = jwt.verify(token, process.env.JWT_SECRET || 'super_secret_adrenaline_key_2026');
+    } catch {
+      req.user = { id: 'guest_' + Date.now(), role: 'guest', name: 'Guest Driver' };
+    }
+  } else {
+    req.user = { id: 'guest_' + Date.now(), role: 'guest', name: 'Guest Driver' };
+  }
+  next();
+};
 
 // ─── POST /api/orders/checkout (Server-side validation & Atomic reservation)
-router.post('/checkout', async (req, res) => {
+router.post('/checkout', optionalAuth, async (req, res) => {
   const { items, shippingAddress, paymentId } = req.body;
 
   if (!items || !Array.isArray(items) || items.length === 0) {
@@ -181,7 +195,7 @@ router.post('/checkout', async (req, res) => {
 });
 
 // ─── GET /api/orders (Customer Order History) ──────────────────────
-router.get('/', async (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
   try {
     if (mongoose.connection.readyState !== 1) {
       const userOrders = IN_MEMORY_ORDERS.filter(o => o.user === req.user.id);
@@ -333,7 +347,7 @@ router.get('/analytics', adminMiddleware, async (req, res) => {
 });
 
 // ─── PUT /api/orders/:id/status (Customer / Admin Status Update) ───
-router.put('/:id/status', async (req, res) => {
+router.put('/:id/status', authMiddleware, async (req, res) => {
   try {
     const { status } = req.body;
     const allowed = ['CANCELLED', 'RETURN_REQUESTED', 'REFUNDED', 'SHIPPED', 'DELIVERED'];

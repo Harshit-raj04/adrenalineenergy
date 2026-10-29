@@ -11,7 +11,7 @@ module.exports = (req, res, next) => {
     const token = authHeader.split(' ')[1];
 
     try {
-        const verified = jwt.verify(token, process.env.JWT_SECRET);
+        const verified = jwt.verify(token, process.env.JWT_SECRET || 'super_secret_adrenaline_key_2026');
         req.user = verified; // Attach the decoded user payload to the request object
         next();
     } catch (err) {
