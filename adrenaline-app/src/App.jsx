@@ -11,6 +11,7 @@ import OrderHistoryPage from './pages/OrderHistoryPage';
 import HelpSupportPage from './pages/HelpSupportPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsConditionPage from './pages/TermsConditionPage';
+import EventsPage from './pages/EventsPage';
 import ScrollToTop from './components/ScrollToTop';
 import AgentWidget from './components/AgentWidget';
 import AdminPage from './pages/AdminPage';
@@ -381,7 +382,10 @@ export default function App() {
           </Link>
           <div className="hidden md:flex gap-8 font-bold uppercase text-sm tracking-widest items-center relative z-50">
             <a href="/#products" className="hover:text-red-500 transition">Pit Lane (Products)</a>
-            <a href="#" className="hover:text-red-500 transition">Telemetry</a>
+            <Link to="/events" className="hover:text-red-500 transition flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
+              F1 Events
+            </Link>
             <Link to="/admin" className="text-yellow-500 hover:text-yellow-400 transition">Admin Panel</Link>
             <button 
               onClick={() => setIsBuyMenuOpen(true)}
@@ -479,6 +483,10 @@ export default function App() {
             >
               <div className="flex flex-col p-6 gap-6 font-bold uppercase tracking-[0.2em] text-sm">
                 <a href="/#products" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-red-500">Pit Lane</a>
+                <Link to="/events" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-red-500 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
+                  F1 Grand Prix
+                </Link>
                 {currentUser ? (
                   <div className="border-b border-white/10 pb-4">
                     <div className="text-[10px] font-mono text-cyan-400">DRIVER ACTIVE</div>
@@ -509,6 +517,7 @@ export default function App() {
       <main className="relative z-10 flex-1 flex flex-col pt-16 mb-24">
         <Routes>
           <Route path="/" element={<HomePage isAntigravityOn={isAntigravityOn} addToCart={addToCart} />} />
+          <Route path="/events" element={<EventsPage />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/address" element={<AddressPage />} />
           <Route path="/orders" element={<OrderHistoryPage orders={orders} setOrders={setOrders} />} />
@@ -525,6 +534,7 @@ export default function App() {
             <span>© 2026. All rights reserved.</span>
           </div>
           <div className="flex gap-6 uppercase tracking-widest font-bold text-xs">
+            <Link to="/events" className="hover:text-red-500 transition text-red-500 font-black">F1 Grand Prix</Link>
             <Link to="/privacy" className="hover:text-red-500 transition">Privacy Policy</Link>
             <Link to="/terms" className="hover:text-red-500 transition">Terms & Conditions</Link>
           </div>
