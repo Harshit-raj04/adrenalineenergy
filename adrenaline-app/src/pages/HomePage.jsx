@@ -6,6 +6,7 @@ import { Zap, Info, AlertTriangle, Search, Filter, SlidersHorizontal, PackageX }
 import { useLocation } from 'react-router-dom';
 import { API_BASE } from '../utils/auth';
 import CustomDrinkLab from '../components/CustomDrinkLab';
+import EventsCarousel from '../components/EventsCarousel';
 
 const FLAVORS = [
   { id: 'cran',    name: 'CRANBERRY APEX',    desc: 'Fierce sweet-tart energy rush',   img: '/can-cranberry.png',    imgSplash: '/can-cranberry-splash.png',    color: 'from-red-600 to-red-900',       price: '$4.99', category: 'HIGH_OCTANE', caffeine: 180, sugar: 0, rating: 4.9 },
@@ -204,6 +205,9 @@ export default function HomePage({ isAntigravityOn, addToCart }) {
           </motion.div>
         </main>
       </div>
+
+      {/* Flagship Events Carousel (Red Bull Reference Banner) */}
+      <EventsCarousel />
 
       {/* Products Discovery Section */}
       <section id="products" className="relative w-full min-h-screen py-16 md:py-32 px-4 md:px-16 overflow-hidden transition-colors duration-1000">
