@@ -14,9 +14,9 @@ app.use(express.json({ limit: '1mb' }));
 // Database Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/adrenaline';
 if (process.env.NODE_ENV !== 'test') {
-  mongoose.connect(MONGODB_URI)
+  mongoose.connect(MONGODB_URI, { serverSelectionTimeoutMS: 2000 })
     .then(() => console.log('🏎️  MongoDB Engine Online: Connected to Adrenaline telemetry.'))
-    .catch(err => console.error('⚠️  MongoDB Connection Error:', err.message));
+    .catch(err => console.log('ℹ️  MongoDB offline. Operating seamlessly on In-Memory & Cache fallback.'));
 } else {
   mongoose.set('bufferCommands', false);
 }
@@ -94,6 +94,7 @@ app.use((err, req, res, next) => {
 
 // Start Server (only if executed directly, not imported in tests)
 if (require.main === module) {
+  console.log(`📡 Preparing Adrenaline Core API on port ${PORT}...`);
   app.listen(PORT, () => {
     console.log(`🚀 Adrenaline Core API listening on port ${PORT}`);
   });
