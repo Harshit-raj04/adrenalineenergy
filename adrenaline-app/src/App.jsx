@@ -382,6 +382,7 @@ export default function App() {
           </Link>
           <div className="hidden md:flex gap-8 font-bold uppercase text-sm tracking-widest items-center relative z-50">
             <a href="/#products" className="hover:text-red-500 transition">Pit Lane (Products)</a>
+            <a href="/#custom-drink-lab" className="hover:text-red-500 transition">Custom Fuel</a>
             <Link to="/events" className="hover:text-red-500 transition flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
               F1 Events
@@ -483,6 +484,7 @@ export default function App() {
             >
               <div className="flex flex-col p-6 gap-6 font-bold uppercase tracking-[0.2em] text-sm">
                 <a href="/#products" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-red-500">Pit Lane</a>
+                <a href="/#custom-drink-lab" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-red-500">Custom Fuel</a>
                 <Link to="/events" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-red-500 flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
                   F1 Grand Prix

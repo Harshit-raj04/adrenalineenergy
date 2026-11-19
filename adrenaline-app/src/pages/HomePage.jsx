@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, Info, AlertTriangle, Search, Filter, SlidersHorizontal, PackageX } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { API_BASE } from '../utils/auth';
+import CustomDrinkLab from '../components/CustomDrinkLab';
 
 const FLAVORS = [
   { id: 'cran',    name: 'CRANBERRY APEX',    desc: 'Fierce sweet-tart energy rush',   img: '/can-cranberry.png',    imgSplash: '/can-cranberry-splash.png',    color: 'from-red-600 to-red-900',       price: '$4.99', category: 'HIGH_OCTANE', caffeine: 180, sugar: 0, rating: 4.9 },
@@ -131,8 +132,9 @@ export default function HomePage({ isAntigravityOn, addToCart }) {
   }, []);
 
   useEffect(() => {
-    if (hash === '#products') {
-      const el = document.getElementById('products');
+    if (hash) {
+      const targetId = hash.replace('#', '');
+      const el = document.getElementById(targetId);
       if (el) el.scrollIntoView({ behavior: 'smooth' });
     }
   }, [hash]);
@@ -311,6 +313,9 @@ export default function HomePage({ isAntigravityOn, addToCart }) {
 
         </div>
       </section>
+
+      {/* Make Your Own Drink - F1 Telemetry Custom Fuel Station */}
+      <CustomDrinkLab addToCart={addToCart} isAntigravityOn={isAntigravityOn} />
     </>
   );
 }
